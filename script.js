@@ -1,8 +1,20 @@
 async function search() {
     const query = document.getElementById('search-query').value;
 
-    // Simulate web scraping
-    const scrapedData = await mockWebScraping(query);
+    const response = await fetch('/api/scrape', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query })
+    });
+
+    if (!response.ok) {
+        console.error('Error fetching data:', response.statusText);
+        return;
+    }
+
+    const scrapedData = await response.json();
 
     const nodes = [];
     const links = [];
@@ -17,31 +29,4 @@ async function search() {
     });
 
     drawGraph(nodes, links);
-}
-
-async function mockWebScraping(query) {
-    // This is a mock function. Replace with actual web scraping logic.
-    return [
-        {
-            name: query,
-            related: [
-                { name: `${query} Related 1` },
-                { name: `${query} Related 2` },
-            ]
-        },
-        {
-            name: `${query} Related 1`,
-            related: [
-                { name: `${query} Related 1.1` },
-                { name: `${query} Related 1.2` },
-            ]
-        },
-        {
-            name: `${query} Related 2`,
-            related: [
-                { name: `${query} Related 2.1` },
-                { name: `${query} Related 2.2` },
-            ]
-        }
-    ];
 }
